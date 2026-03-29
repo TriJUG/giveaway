@@ -1,0 +1,100 @@
+TamboUI (0.2.0-SNAPSHOT) — Notes from experience
+===================================================
+
+## text() vs richText() vs richTextArea()
+
+- text("multi\nline")  → only renders the FIRST LINE in all contexts tested.
+  Don't use text() for multi-line content.
+
+- richText(Text)       → renders multi-line Text objects correctly; no border,
+  no padding overhead. Does NOT have .borderType(). Good for inline display of
+  pre-built Text objects (e.g. loaded art files).
+
+- richTextArea(String/Text) → designed for multi-line content; has its own
+  border (default PLAIN, adds 2 rows top+bottom). Remove with
+  .borderType(BorderType.NONE). Has .clip(), .wrapWord() etc.
+  import dev.tamboui.widgets.block.BorderType;
+
+## Building styled multi-line Text programmatically
+
+  Span  → Line  → Text  (bottom-up)
+
+  Style style = Style.create()
+      .fg(Color.indexed(15))   // 256-color palette
+      .bg(Color.indexed(234));
+
+  Span  span = Span.styled("text", style);        // or Span.raw("text")
+  Line  line = Line.from(span);                   // or Line.from("plain string")
+                                                  // or Line.empty()
+  Text  text = Text.from(List.of(line1, line2));  // or Text.from(lines)
+
+  text.height() / text.width() give dimensions.
+  Then render with: richText(text) or richTextArea(text)
+
+  Color.indexed(n) maps to xterm-256 palette.
+  Style also has .bold(), .dim(), .white(), .red() etc. as shortcuts.
+
+## Panel behaviour
+
+  .length(n)    in a row()    → constrains WIDTH
+  .length(n)    in a column() → constrains HEIGHT
+  .fill()       → fills remaining space
+  .fit()        → auto-sizes to content (great for headers — avoids manual height)
+  .borderless() → removes border but may retain padding; add .padding(0) to be sure
+  .padding(int) → uniform padding all sides
+  .rounded()    → rounded corners (╭╮╰╯)
+  panel("Title", content) → title appears in the top border line
+
+  Default border is PLAIN (square corners). richTextArea also defaults to PLAIN.
+
+## Layout rules
+
+  spacer()     → fills remaining space (in row: horizontal; in column: vertical)
+  spacer(n)    → fixed n-unit spacer
+  Vertical centering: column(spacer(), content..., spacer())
+  Horizontal centering: row(spacer(), content..., spacer())
+
+## Event handling
+
+  Store handler as a FINAL FIELD so add and remove use the same instance:
+    private final GlobalEventHandler handler = this::handleKey;
+    runner.eventRouter().addGlobalHandler(handler);
+    runner.eventRouter().removeGlobalHandler(handler);   // in deactivate()
+
+  DO NOT navigate (mutate handler list) from inside a handler — it will
+  ConcurrentModificationException. Defer with:
+    runner.runOnRenderThread(() -> navigate.accept(Screen.HOME));
+
+## Single-app architecture (no screen-transition flash)
+
+  Each ToolkitApp.run() starts/stops the alternate-screen buffer → flash on
+  every screen switch. Fix: one RootApp extends ToolkitApp for the whole app.
+  Screens implement ScreenView:
+    void activate(ToolkitRunner runner, Consumer<Screen> navigate);
+    void deactivate();   // removeGlobalHandler, cancelSpin, etc.
+    Element render();
+  RootApp.navigateTo() calls deactivate() then activate() — no terminal restart.
+  Stateful screens (Pick, Entries, Giveaways) → fresh instance each visit.
+  HomeScreen → singleton (reuse keeps menu position).
+
+## GraalVM native image — resource files
+
+  Add src/main/resources/META-INF/native-image/resource-config.json:
+  {
+    "resources": {
+      "includes": [{ "pattern": "yourfile.txt" }]
+    }
+  }
+  Load at runtime: MyClass.class.getResourceAsStream("/yourfile.txt")
+  (leading slash = classpath root)
+
+## ANSI → TamboUI (parsing escape sequences)
+
+  Sequence format: ESC [ params m   (params = semicolon-separated ints)
+  38;5;N  → fg indexed color N
+  48;5;N  → bg indexed color N
+  49      → default bg (handle as null/transparent)
+  39      → default fg
+  0 / ""  → reset all
+  Parse sequentially: scan for \u001B[ ... m, flush buffered text as a Span
+  before each sequence, update fg/bg state, continue.

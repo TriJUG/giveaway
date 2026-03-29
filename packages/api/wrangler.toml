@@ -1,0 +1,19 @@
+name = "trijug-giveaway-api"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "trijug-giveaway"
+# TODO: fill in after: wrangler d1 create trijug-giveaway
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+[[migrations]]
+tag = "v1"
+new_classes = []
+
+[[routes]]
+# Route /api/* to this Worker on the same domain as the Pages site
+pattern = "giveaway.trijug.dev/api/*"
+zone_name = "trijug.dev"

@@ -1,0 +1,14 @@
+{
+  "name": "trijug-giveaway",
+  "private": true,
+  "workspaces": [
+    "packages/api",
+    "packages/web"
+  ],
+  "scripts": {
+    "format": "prettier --write \"packages/api/src/**/*.ts\" \"packages/web/public/**/*.{html,js}\" \"mock-server.js\""
+  },
+  "devDependencies": {
+    "prettier": "^3.8.1"
+  }
+}

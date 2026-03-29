@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TriJUG Giveaway</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --red: #b91c1c;
+        --red-dark: #991b1b;
+        --bg: #f5f5f5;
+        --text: #1a1a1a;
+        --muted: #595959;
+        --border: #ccc;
+        --focus: #2563eb;
+        --radius: 8px;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+      }
+
+      .card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 2.5rem 2rem;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .logo-mark {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+      }
+
+      .logo-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.35rem;
+        color: var(--text);
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin-bottom: 1.75rem;
+      }
+
+      label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.35rem;
+        color: var(--text);
+      }
+
+      input {
+        width: 100%;
+        padding: 0.65rem 0.85rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-size: 1rem;
+        color: var(--text);
+        background: #fff;
+        margin-bottom: 1.1rem;
+        transition: border-color 0.15s;
+      }
+
+      input:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+        border-color: var(--focus);
+      }
+
+      button[type='submit'] {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--red);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+
+      button[type='submit']:hover:not(:disabled) {
+        background: var(--red-dark);
+      }
+
+      button[type='submit']:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+
+      button[type='submit']:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .message {
+        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius);
+        font-size: 0.9rem;
+        display: none;
+      }
+
+      .message.success {
+        background: #f0faf0;
+        border: 1px solid #b2d8b2;
+        color: #2a6e2a;
+      }
+
+      .message.error {
+        background: #fff0f0;
+        border: 1px solid #f0b2b2;
+        color: #8a1a1a;
+      }
+
+      .closed {
+        text-align: center;
+        padding: 1rem 0;
+      }
+
+      .closed p {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .closed .icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+      }
+
+      footer {
+        margin-top: 1.5rem;
+        font-size: 0.78rem;
+        color: var(--muted);
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="logo">
+        <img class="logo-mark" src="duke.png" alt="Duke" />
+        <span class="logo-text">TriJUG</span>
+      </div>
+
+      <div id="loading">
+        <p style="color: var(--muted); font-size: 0.95rem">Loading&hellip;</p>
+      </div>
+
+      <div id="closed" class="closed" style="display: none">
+        <div class="icon">🎟️</div>
+        <p>No giveaway is currently open.</p>
+        <p style="margin-top: 0.4rem">Check back at the next meetup!</p>
+      </div>
+
+      <div id="form-section" style="display: none">
+        <h1>Enter to Win</h1>
+        <p class="subtitle" id="giveaway-name"></p>
+        <p class="subtitle">You must be present during the drawing to win.</p>
+        <form id="entry-form" novalidate>
+          <label for="name">Name</label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            autocomplete="name"
+            placeholder="Your full name"
+            required
+          />
+          <label for="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+            required
+          />
+          <p
+            style="
+              font-size: 0.78rem;
+              color: var(--muted);
+              margin-top: -0.6rem;
+              margin-bottom: 1.1rem;
+            "
+          >
+            Your email is only used to deliver your prize if you win. We don&rsquo;t share it or use
+            it for anything else.
+          </p>
+          <button type="submit" id="submit-btn">Enter Giveaway</button>
+        </form>
+        <div id="message" class="message"></div>
+      </div>
+
+      <div id="success-section" style="display: none; text-align: center; padding: 1rem 0">
+        <div style="font-size: 2.5rem; margin-bottom: 0.75rem">🎉</div>
+        <h1 style="margin-bottom: 0.5rem">You&rsquo;re entered!</h1>
+        <p style="color: var(--muted); font-size: 0.95rem">Good luck tonight!</p>
+      </div>
+    </div>
+
+    <footer>
+      Triangle Java Users Group &mdash;
+      <a href="https://trijug.dev" style="color: var(--red)">trijug.dev</a>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

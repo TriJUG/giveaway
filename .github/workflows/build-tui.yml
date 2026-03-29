@@ -1,0 +1,43 @@
+name: Build TUI Native Binary
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/tui/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: trijug-linux
+          - os: macos-latest
+            artifact: trijug-macos
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install zlib (Linux only)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y zlib1g-dev
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '25'
+          distribution: graalvm
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build native binary
+        working-directory: packages/tui
+        run: ./gradlew nativeCompile
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: packages/tui/build/native/nativeCompile/trijug
+          retention-days: 90

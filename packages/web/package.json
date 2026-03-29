@@ -1,0 +1,11 @@
+{
+  "name": "@trijug/web",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler pages deploy public --project-name trijug-giveaway-web"
+  },
+  "devDependencies": {
+    "wrangler": "^3.114.17"
+  }
+}
