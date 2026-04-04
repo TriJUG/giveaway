@@ -8,9 +8,4 @@ binding = "DB"
 database_name = "trijug-giveaway"
 database_id = "9fc04c02-7d53-4c40-b9cc-eddf27309686"
 
-[[migrations]]
-tag = "v1"
-new_classes = []
-
-[[custom_domains]]
-pattern = "giveaway-api.trijug.dev"
+workers_dev = true
