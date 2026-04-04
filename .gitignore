@@ -10,6 +10,7 @@ dist/
 build/
 *.class
 *.jar
+!packages/tui/gradle/wrapper/gradle-wrapper.jar
 out/
 
 # IDE
