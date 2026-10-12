@@ -1,6 +1,7 @@
 {
   "name": "trijug-giveaway",
   "private": true,
+  "packageManager": "pnpm@10.33.0",
   "workspaces": [
     "packages/api",
     "packages/web"
