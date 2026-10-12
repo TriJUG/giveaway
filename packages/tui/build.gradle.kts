@@ -16,13 +16,9 @@ java {
 
 repositories {
     mavenCentral()
-    maven {
-        url = uri("https://central.sonatype.com/repository/maven-snapshots/")
-        mavenContent { snapshotsOnly() }
-    }
 }
 
-val tamboVersion = "0.2.0-SNAPSHOT"
+val tamboVersion = "0.5.0"
 
 dependencies {
     implementation(platform("dev.tamboui:tamboui-bom:$tamboVersion"))

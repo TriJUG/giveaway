@@ -103,7 +103,13 @@ public class EntriesScreen implements ScreenView {
             return;
         }
         var res = state.api().deleteEntry(Json.str(entries.get(idx), "id"));
-        statusMsg = (res.ok() || res.status() == 204) ? "Entry deleted." : "Delete failed.";
+        if (res.ok() || res.status() == 204) {
+            statusMsg = "Entry deleted.";
+        } else if (res.status() == 409) {
+            statusMsg = "Can't delete: entry has already been drawn.";
+        } else {
+            statusMsg = "Delete failed.";
+        }
         loadEntries();
         mode = Mode.TABLE;
     }

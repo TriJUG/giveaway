@@ -53,6 +53,10 @@ export async function deleteEntry(req: Request, env: Env, entryId: string): Prom
   if (!isAdmin(req, env)) return unauthorized();
   const entry = await env.DB.prepare('SELECT id FROM entries WHERE id = ?').bind(entryId).first();
   if (!entry) return notFound('Entry not found');
+  const selection = await env.DB.prepare('SELECT id FROM selections WHERE entry_id = ?')
+    .bind(entryId)
+    .first();
+  if (selection) return conflict('Entry has been selected and cannot be deleted');
   await env.DB.prepare('DELETE FROM entries WHERE id = ?').bind(entryId).run();
   return new Response(null, { status: 204 });
 }

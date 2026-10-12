@@ -232,6 +232,9 @@ function route(method, path, body) {
   if (method === 'DELETE' && deleteMatch) {
     const idx = entries.findIndex((e) => e.id === deleteMatch[1]);
     if (idx === -1) return [404, { error: 'Not found' }];
+    if (selections.some((s) => s.entry_id === deleteMatch[1])) {
+      return [409, { error: 'Entry has been selected and cannot be deleted' }];
+    }
     entries.splice(idx, 1);
     return [204, null];
   }
